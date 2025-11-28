@@ -1,6 +1,0 @@
-[submodule "auth-svc"]
-	path = auth-svc
-	url = https://github.com/winterrdog/auth-service.git
-[submodule "auth-service"]
-	path = auth-service
-	url = https://github.com/winterrdog/auth-service.git

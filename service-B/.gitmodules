@@ -1,3 +1,0 @@
-[submodule "payment-processor-service"]
-	path = payment-processor-service
-	url = https://github.com/winterrdog/payment-processor-service.git
