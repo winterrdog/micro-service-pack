@@ -159,3 +159,8 @@ quick start:
 ```
 
 see [db-backups/README.md](./db-backups/README.md) for complete backup and restore documentation.
+
+## notes
+
+- i did the whole of task 1 and parts of task 2 i.e. 2 through 4 only.
+- i could have finished everything... but i fell sick of malaria, last friday, and only gained back good health on wednesday thus having only 2 days to do the assignment herein.
