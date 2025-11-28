@@ -1,0 +1,11 @@
+# ignore backup files
+*.sql
+*.sql.gz
+
+# ignore log files
+*.log
+
+# keep scripts and documentation
+!*.sh
+!*.md
+!.gitignore
