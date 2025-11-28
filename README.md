@@ -160,6 +160,15 @@ quick start:
 
 see [db-backups/README.md](./db-backups/README.md) for complete backup and restore documentation.
 
+## documentation
+
+- [ARCHITECTURE.md](./ARCHITECTURE.md) - detailed system architecture and network topology
+- [NGINX_GUIDE.md](./NGINX_GUIDE.md) - nginx configuration and troubleshooting
+<!-- - [PRESENTATION_PLAN.md](./PRESENTATION_PLAN.md) - demo video script and timing -->
+<!-- - [DEMO_CHECKLIST.md](./DEMO_CHECKLIST.md) - preparation checklist for recording -->
+<!-- - [demo-commands.txt](./demo-commands.txt) - ready-to-use commands for demo -->
+- [db-backups/README.md](./db-backups/README.md) - backup and restore guide
+
 ## notes
 
 - i did the whole of task 1 and parts of task 2 i.e. 2 through 4 only.
