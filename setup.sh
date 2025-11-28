@@ -19,7 +19,7 @@ docker compose up -d
 # wait for services to be healthy
 echo ""
 echo "+ waiting for services to be ready..."
-sleep 4
+sleep 10
 
 echo ""
 echo "+ checking service health..."
