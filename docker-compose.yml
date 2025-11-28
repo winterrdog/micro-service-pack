@@ -1,0 +1,144 @@
+services:
+
+  # Nginx reverse proxy with SSL & load balancing
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"    # HTTP (redirects to HTTPS)
+      - "443:443"  # HTTPS
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl-params.conf:/etc/nginx/ssl-params.conf:ro
+      - ./nginx/services.conf:/etc/nginx/conf.d/services.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - nginx-logs:/var/log/nginx
+    depends_on:
+      - app_a1
+      - app_a2
+      - app_b1
+      - app_b2
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Authentication Service - Instance 1
+  app_a1:
+    build: ./service-A/auth-svc
+    container_name: app_a1
+    env_file:
+      - ./service-A/auth-svc/.env
+    expose:
+      - "3000"  # internal only, not published to host
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:3000/health" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - app-network
+
+  # Authentication Service - Instance 2
+  app_a2:
+    build: ./service-A/auth-svc
+    container_name: app_a2
+    env_file:
+      - ./service-A/auth-svc/.env
+    expose:
+      - "3000"
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:3000/health" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - app-network
+
+  auth-db:
+    image: postgres:16
+    container_name: auth-db
+    restart: always
+    env_file:
+      - ./service-A/auth-svc/.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - auth_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # Payment Processor Service - Instance 1
+  app_b1:
+    build: ./service-B/payment-processor-svc
+    container_name: app_b1
+    env_file:
+      - ./service-B/payment-processor-svc/.env
+    expose:
+      - "4000"
+    depends_on:
+      - app_a1
+      - payments-db
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:4000/health" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - app-network
+
+  # Payment Processor Service - Instance 2
+  app_b2:
+    build: ./service-B/payment-processor-svc
+    container_name: app_b2
+    env_file:
+      - ./service-B/payment-processor-svc/.env
+    expose:
+      - "4000"
+    depends_on:
+      - app_a1
+      - payments-db
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:4000/health" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    networks:
+      - app-network
+
+  payments-db:
+    image: postgres:16
+    container_name: payments-db
+    restart: always
+    env_file:
+      - ./service-B/payment-processor-svc/.env
+    ports:
+      - "5433:5432"
+    volumes:
+      - payments_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  auth_postgres_data:
+  payments_postgres_data:
+  nginx-logs:  # persist nginx logs
